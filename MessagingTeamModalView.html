@@ -1,0 +1,35 @@
+<div class="ibox float-e-margins">
+    <div class="ibox-title" title="Click on the team you want to start the chat in.">
+        <h2><strong class="text-navy">Your Current Teams</strong></h2>
+        <h5>Click on the team name and choose the members you want to chat with</h5>
+        <div class="ibox-tools">
+            <a class="close-link" ng-click="$ctrl.closeChatTeamModalWindow()">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div class="ibox-content">
+        <uib-accordion close-others="true">
+            <div style=" color: black; padding: 5px;  font-size: 15px;" uib-accordion-group class=" btn-outline btn-primary text-center" ng-repeat="team in $ctrl.teamsYouAreOn">
+                <uib-accordion-heading>
+                    <div ng-click="$ctrl.getAllTeamsAndMembers(team.currentTeamId)">{{team.teamName}}</div>
+                </uib-accordion-heading>
+                <form name="chatFrm">
+                    <div class="table-responsive" ng-repeat="member in $ctrl.membersInTeam">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                                <tr>
+                                    <td class="client-avatar img"><img src="{{member.imageURL}}"></td>
+                                    <td style="padding-top: 12px" class="text-left client-link"><p class="overflow-ellipsis"><strong>{{member.fullName}}</strong></p></td>
+                                    <td style="padding-top: 12px"><i class="fa fa-phone text-right"></i> {{member.phoneNumber}}</td>
+                                    <td style="padding-top: 15px" class="client-status"><span class="label pull-right"><input type="checkbox" ng-model="member.isChecked" name="isChecked" ng-change="$ctrl.pickPeople(member)"/></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button title="Start Chatting" type="button" class="btn btn-success btn-sm pull-right" ng-disabled="!$ctrl.chatArray[0]" ng-click="$ctrl.startChatting(team.teamName)">Start Chat</button>
+                </form>
+            </div>
+        </uib-accordion>
+    </div>
+</div>
