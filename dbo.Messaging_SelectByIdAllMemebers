@@ -1,0 +1,97 @@
+USE [LeaseHold]
+GO
+/****** Object:  StoredProcedure [dbo].[Chat_SelectByIdAllMembers]    Script Date: 3/30/2018 4:26:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Brian Fury Song
+-- Create date: 1/17/20218
+-- Description:	dbo.Chat_SelectByIdAllMembers
+-- =============================================
+ALTER PROCEDURE [dbo].[Chat_SelectByIdAllMembers]
+	@ChatId int
+
+AS
+BEGIN
+
+	/*
+	==TEST CODE	
+	exec dbo.chat_selectbyidallmembers @ChatId = 2
+	
+		
+	*/
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	Declare @BucketUrl nvarchar(255);
+	select @BucketUrl = ConfigValue from AppConfig where ConfigKey='AWSBucketUrl'
+
+
+	SELECT DISTINCT concat (up.FirstName, ' ', up.LastName) as FullName, cup.ChatId, ChatName, 
+		concat (@BucketUrl, up.ProfileImageUrl) as ImageURL, cup.UserProfileId, c.TeamId
+	
+	FROM dbo.ChatUserProfile cup
+
+	INNER JOIN dbo.Chat c on c.Id = cup.ChatId
+	INNER JOIN dbo.UserProfile up on up.Id = cup.UserProfileId
+	INNER JOIN dbo.TeamMember tm on tm.UserProfileId = up.Id
+
+	WHERE ChatId = @ChatId
+
+END
+
+
+
+
+
+
+
+
+--USE [C45_LeaseHold]
+--GO
+--/****** Object:  StoredProcedure [dbo].[Chat_SelectByIdAllMembers]    Script Date: 1/24/2018 1:37:26 PM ******/
+--SET ANSI_NULLS ON
+--GO
+--SET QUOTED_IDENTIFIER ON
+--GO
+---- =============================================
+---- Author:		Brian Fury Song
+---- Create date: 1/17/20218
+---- Description:	dbo.Chat_SelectByIdAllMembers
+---- =============================================
+--ALTER PROCEDURE [dbo].[Chat_SelectByIdAllMembers]
+--	@ChatId int
+
+--AS
+--BEGIN
+
+--	/*
+--	==TEST CODE	
+--	exec dbo.chat_selectbyidallmembers @ChatId = 2
+	
+		
+--	*/
+--	-- SET NOCOUNT ON added to prevent extra result sets from
+--	-- interfering with SELECT statements.
+--	SET NOCOUNT ON;
+
+--    -- Insert statements for procedure here
+--	Declare @BucketUrl nvarchar(255);
+--	select @BucketUrl = ConfigValue from AppConfig where ConfigKey='AWSBucketUrl'
+
+
+--	SELECT concat (up.FirstName, ' ', up.LastName) as FullName, cup.ChatId, ChatName, 
+--		concat (@BucketUrl, up.ProfileImageUrl) as ImageURL, cup.UserProfileId
+	
+--	FROM dbo.ChatUserProfile cup
+
+--	INNER JOIN dbo.Chat c on c.Id = cup.ChatId
+--	INNER JOIN dbo.UserProfile up on up.Id = cup.UserProfileId
+
+--	WHERE ChatId = @ChatId
+
+--END
