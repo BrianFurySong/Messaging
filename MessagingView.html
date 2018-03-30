@@ -1,0 +1,72 @@
+<div  ng-show="$ctrl.chats.length == 0" style="text-align: center; font: 24px">
+    Start messaging your team members by clicking on the "New Chat" button.
+</div>
+
+<div style="width: 100%; overflow: hidden;" ng-show="$ctrl.chatIndex">
+    <div style="height: 800px; width: 100%; overflow: auto; padding-right: 20px;">
+        <div class="col-md-12">
+            <div ng-show="$ctrl.chatIndex" style="width: 100%; overflow: visible;">
+                <button type="button" style="z-index: 10; position: fixed; right:30px; top: 20px;" class="btn btn-primary btn-sm" ng-click="$ctrl.launchChatTeamModal()">New Chat</button>
+
+                <div class="row" ng-repeat="memberItem in $ctrl.finalMembersPics | orderBy: 'chatId'">
+                    <div class="col-md-3 col-md-offset-1 menu">
+                        <ul>
+                            <li ng-click="$ctrl.openChat(memberItem.chatId)">
+                                {{memberItem.chatName}} <!--<span ng-show="memberItem.pendingMessages != 0"> | {{memberItem.pendingMessages}} unread message<span ng-show="memberItem.pendingMessages > 1"></span></span>-->
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="user-friends" ng-repeat="picItem in memberItem.urlArray track by $index">
+                            <img alt="image" class="img-circle img-shadow" src="{{picItem}}" style="position:absolute; z-index: {{50 - $index}}; margin-left: {{$index *20}}px; ">
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="!$ctrl.chatIndex" class="chat-discussion col-md-7">
+                <div ng-repeat="item in $ctrl.chats" ng-click="$ctrl.openChat(item.id)">
+                    {{item.chatName}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-show="!$ctrl.chatIndex">
+    <div class="col-m-12">
+        <button type="button" class="btn btn-primary btn-sm" style="margin-bottom: 3px" ng-click="$ctrl.back();">Back</button>
+    </div>
+
+    <div class="chat-discussion col-md-9">
+        <div class="chat-message" ng-class="{'right':(response.isUser), 'left':!(response.isUser)}" ng-repeat="response in $ctrl.chatThread">
+            <img class="img-circle m-b-md message-avatar" style="height:48px; width:48px; float:right" ng-src="https://sabio-training.s3-us-west-2.amazonaws.com/{{response.profileImageUrl}}" />
+            <div class="message">
+                <span class="message-date">{{response.createdDate}}</span>
+                <span class="message-author">{{response.firstName}} {{response.lastName}}</span>
+                <span class="message-content">
+                    <strong>{{response.message}}</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 chat-users">
+        <div class="users-list">
+            <div class="chat-user" ng-repeat="user in $ctrl.chatUsers">
+                <img class="chat-avatar img-circle" ng-src="{{user.imageURL}}" />
+                <div class="chat-user-name">
+                    {{user.fullName}}
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <button style="margin-left: 2.2vh;" type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.addMemberModal()">Invite Member</button>
+        <button style="margin-left: .1vh;" type="button" class="btn btn-success btn-xs" ng-click="$ctrl.leaveChat()">Leave Chat</button>
+    </div>
+    <form name="sendFrm">
+        <div class="chat-input">
+            <textarea name="message" required placeholder="message" maxlength="1000" ng-model="$ctrl.chatMessage.message" on-enter="$ctrl.sendMessage()"></textarea>
+            <button title="Send Chat" ng-disabled="sendFrm.$invalid" type="submit" id="chatSend" class="btn btn-primary btn-sm" style="margin-bottom: 3px" ng-click="$ctrl.sendMessage();">Send</button>
+        </div>
+    </form>
+</div>
