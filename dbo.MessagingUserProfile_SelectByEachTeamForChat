@@ -1,0 +1,55 @@
+USE [LeaseHold]
+GO
+/****** Object:  StoredProcedure [dbo].[ChatUserProfile_SelectByEachTeamForChat]    Script Date: 3/30/2018 4:28:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Brian Fury Song
+-- Create date: 1/13/2018
+-- Description:	dbo.ChatUserProfile_SelectByEachTeamForChat
+-- =============================================
+ALTER PROCEDURE [dbo].[ChatUserProfile_SelectByEachTeamForChat] 
+		
+		@UserBaseId int,
+		@TeamId int
+AS
+BEGIN
+	/*
+	==TEST CODE
+
+	exec [dbo].[ChatUserProfile_SelectByEachTeamForChat] 
+	@TeamId = 19, @UserBaseId = 3
+
+
+	*/
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	declare @UserProfileId int = 0
+	select @UserProfileId = Id from dbo.UserProfile up where UserBaseId = @UserBaseId	
+
+	Declare @BucketUrl nvarchar(255);
+	select @BucketUrl = ConfigValue from AppConfig where ConfigKey='AWSBucketUrl'
+
+	SELECT t.Id, ub.Id as UserBaseId, tm.UserProfileId, t.Title, t.Description, concat(up.FirstName, ' ', up.LastName)as FullName, up.PhoneNumber,
+	case 
+			when up.ProfileImageUrl is null then 'https://www.provintl.com/hubfs/user.svg?t=1504908796982'
+			else 
+			case when up.ProfileImageUrl = '' then 'https://www.provintl.com/hubfs/user.svg?t=1504908796982'
+			else 
+			concat(@BucketUrl, up.ProfileImageUrl)
+			
+			end end
+			as ImageURL
+
+
+	FROM dbo.TeamMember tm
+	INNER JOIN dbo.Team t on t.Id = tm.TeamId
+	INNER JOIN dbo.UserProfile up on up.Id = tm.UserProfileId
+	INNER JOIN dbo.UserBase ub on ub.Id = up.UserBaseId
+	WHERE (t.Id = @TeamId) AND NOT (up.UserBaseId = @UserBaseId)
+END
